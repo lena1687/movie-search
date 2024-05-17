@@ -12,6 +12,14 @@ export default defineConfig({
       src: fileURLToPath(new URL('src', import.meta.url))
     }
   },
+  server: {
+    port: 3000,
+    open: true,
+    strictPort: true,
+    hmr: {
+      overlay: true
+    }
+  },
   plugins: [vue(), analyzer({ summaryOnly: true })],
   test: {
     environment: 'happy-dom',
