@@ -11,23 +11,23 @@
   </div>
 </template>
 
-<script setup>
-import MovieItem from 'src/components/MovieItem.vue'
+<script setup lang="ts">
+import MovieItem from '@components/MovieItem.vue'
 import { ref, onMounted } from 'vue'
-import { getMoviesList } from 'src/services/api'
+import MovieService, { Movie, MovieDetails } from '@services/api/MovieService.ts'
 
-const moviesList = ref([])
+const moviesList = ref<MovieDetails[]>([])
 
 onMounted(async () => {
   try {
-    const fullMovieList = await getMoviesList()
+    const fullMovieList = await MovieService.getMovies()
     const uniqueMovies = getUniqueMoviesSet(fullMovieList)
     moviesList.value = formatMoviesList(uniqueMovies)
   } catch (error) {
     console.error('Error fetching items:', error)
   }
 
-  function getUniqueMoviesSet(fullMovieList) {
+  function getUniqueMoviesSet(fullMovieList: Movie[]) {
     const moviesSet = new Set()
     return fullMovieList.filter((movie) => {
       const { _embedded } = movie
@@ -42,7 +42,7 @@ onMounted(async () => {
     })
   }
 
-  function formatMoviesList(movies) {
+  function formatMoviesList(movies: Movie[]) {
     return movies
       .filter((movie) => {
         const defaultLanguage = 'English'
