@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
-import { GenreType } from '../../types/MovieTypes.ts'
+import { GenreTypes } from '@types/GenreTypes.ts'
 
 export interface Movie {
   _embedded: Record<'show', fullMovieDetails>
@@ -9,7 +9,7 @@ export interface Movie {
 export interface fullMovieDetails {
   id: number
   name: string
-  genres: GenreType[]
+  genres: GenreTypes[]
   language: string | null
   url: string
   type: string
@@ -29,7 +29,7 @@ export interface fullMovieDetails {
 
 export interface MovieDetails {
   country: string
-  genres: GenreType[]
+  genres: GenreTypes[]
   id: number
   img: string
   name: string

@@ -26,40 +26,40 @@ onMounted(async () => {
   } catch (error) {
     console.error('Error fetching items:', error)
   }
+})
 
-  function getUniqueMoviesSet(fullMovieList: Movie[]) {
-    const moviesSet = new Set()
-    return fullMovieList.filter((movie) => {
+function getUniqueMoviesSet(fullMovieList: Movie[]) {
+  const moviesSet = new Set()
+  return fullMovieList.filter((movie) => {
+    const { _embedded } = movie
+    const details = _embedded.show
+    const key = `${details.name}-${details.premiered}`
+    if (moviesSet.has(key)) {
+      return false
+    } else {
+      moviesSet.add(key)
+      return true
+    }
+  })
+}
+
+function formatMoviesList(movies: Movie[]) {
+  return movies
+    .filter((movie) => {
+      const defaultLanguage = 'English'
       const { _embedded } = movie
       const details = _embedded.show
-      const key = `${details.name}-${details.premiered}`
-      if (moviesSet.has(key)) {
-        return false
-      } else {
-        moviesSet.add(key)
-        return true
-      }
+      const { language, genres } = details
+      if (language === defaultLanguage && genres.length > 0) return movie
     })
-  }
-
-  function formatMoviesList(movies: Movie[]) {
-    return movies
-      .filter((movie) => {
-        const defaultLanguage = 'English'
-        const { _embedded } = movie
-        const details = _embedded.show
-        const { language, genres } = details
-        if (language === defaultLanguage && genres.length > 0) return movie
-      })
-      .map((movie) => {
-        const { _embedded } = movie
-        const details = _embedded.show
-        const img = details.image?.medium || details.image?.original || ''
-        const networkDetails = details.network?.country
-        const country = networkDetails?.name || ''
-        const { id, name, genres, url, type, premiered, weight, summary } = details
-        return { id, name, genres, url, type, premiered, weight, img, summary, country }
-      })
-  }
-})
+    .map((movie) => {
+      const { _embedded } = movie
+      const details = _embedded.show
+      const img = details.image?.medium || details.image?.original || ''
+      const networkDetails = details.network?.country
+      const country = networkDetails?.name || ''
+      const { id, name, genres, url, type, premiered, weight, summary } = details
+      return { id, name, genres, url, type, premiered, weight, img, summary, country }
+    })
+}
 </script>
