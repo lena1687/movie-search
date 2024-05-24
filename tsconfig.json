@@ -2,7 +2,10 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@services/*": ["src/services/*"]
+      "@styles/*": ["src/assets/styles/*"],
+      "@services/*": ["src/services/*"],
+      "@types/*": ["src/types/*"],
+      "@stores/*": ["src/stores/*"]
     },
     "target": "ESNext",
     "module": "ESNext",

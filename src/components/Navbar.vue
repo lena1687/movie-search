@@ -11,8 +11,8 @@ import Tabs from '@components/Tabs.vue'
 import { ref } from 'vue'
 
 const tabs = [
-  { name: 'Tab 1', component: GenreList },
-  { name: 'Tab 2', component: CountryList }
+  { name: 'Genres', component: GenreList },
+  { name: 'Countries', component: CountryList }
 ]
 
 const activeTab = ref<string>(tabs[0].name)
