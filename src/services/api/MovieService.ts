@@ -11,9 +11,9 @@ export interface fullMovieDetails {
   name: string
   genres: GenreTypes[]
   language: string | null
-  url: string
-  type: string
+  officialSite: string
   premiered: string
+  averageRuntime: number
   weight: number
   summary: string
   image: {
@@ -35,9 +35,9 @@ export interface MovieDetails {
   name: string
   premiered: string
   summary: string
-  type: string
-  url: string
+  officialSite: string
   weight: number
+  averageRuntime: number
 }
 
 class MovieService {

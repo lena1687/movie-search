@@ -1,7 +1,12 @@
 <template>
   <div v-if="genreList.length > 0">
     <div>
-      <div v-for="genre in genreList" :key="genre" :class="genreIconClasses[genre]">
+      <div
+        v-for="genre in genreList"
+        :key="genre"
+        :class="genreIconClasses[genre]"
+        @click="filterGenre(genre)"
+      >
         {{ genre }}
       </div>
     </div>
@@ -12,8 +17,13 @@
 import { onMounted, ref } from 'vue'
 import MovieService, { Movie } from '@services/api/MovieService.ts'
 import { GenreTypes } from '@types/GenreTypes.ts'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
+const fullMovieList = ref<Movie[]>([])
 const genreList = ref<GenreTypes[]>([])
+const router = useRouter()
+const store = useStore()
 
 const genreIconClasses: Record<GenreTypes, string> = {
   Action: 'icon-action',
@@ -48,8 +58,8 @@ const genreIconClasses: Record<GenreTypes, string> = {
 
 onMounted(async () => {
   try {
-    const fullMovieList = await MovieService.getMovies()
-    genreList.value = getUniqueGenres(fullMovieList)
+    fullMovieList.value = await MovieService.getMovies()
+    genreList.value = getUniqueGenres(fullMovieList.value)
   } catch (error) {
     console.error('Error fetching items:', error)
   }
@@ -72,6 +82,62 @@ function getUniqueGenres(fullMovieList: Movie[]): GenreTypes[] {
     acc.sort()
     return acc
   }, [])
+}
+
+const filterGenre = (genre: GenreTypes) => {
+  const movieList = getUniqueMoviesSet(fullMovieList.value)
+  const filteredMovieList = filterMoviesList(movieList, genre)
+  const formattedMovieList = formattedMoviesList(filteredMovieList)
+  store.dispatch('updateFormattedMovieList', { [genre]: formattedMovieList })
+  router.push({ name: 'MoviesPage', params: { genre } })
+}
+
+function getUniqueMoviesSet(fullMovieList: Movie[]) {
+  const moviesSet = new Set()
+  return fullMovieList.filter((movie) => {
+    const { _embedded } = movie
+    const details = _embedded.show
+    const key = `${details.name}-${details.premiered}`
+    if (moviesSet.has(key)) {
+      return false
+    } else {
+      moviesSet.add(key)
+      return true
+    }
+  })
+}
+
+function filterMoviesList(movies: Movie[], genre: GenreTypes) {
+  return movies.filter((movie) => {
+    const defaultLanguage = 'English'
+    const { _embedded } = movie
+    const details = _embedded.show
+    const { language, genres } = details
+    if (language === defaultLanguage && genres.includes(genre)) return movie
+  })
+}
+
+function formattedMoviesList(movies: Movie[]) {
+  return movies.map((movie) => {
+    const { _embedded } = movie
+    const details = _embedded.show
+    const img = details.image?.medium || details.image?.original || ''
+    const networkDetails = details.network?.country
+    const country = networkDetails?.name || ''
+    const { id, name, genres, officialSite, premiered, weight, summary, averageRuntime } = details
+    return {
+      id,
+      name,
+      genres,
+      officialSite,
+      premiered,
+      weight,
+      img,
+      summary,
+      country,
+      averageRuntime
+    }
+  })
 }
 </script>
 
